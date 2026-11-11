@@ -410,7 +410,7 @@ Res ensureResources(int w, int h, int q, std::string& err) {
         g.maxProgramsReady = true;
     }
     if (q == 3 && config().experimental.load() && !g.experimentalProgramReady) {
-        std::string defs = "#define QUALITY 3\\n#define EXPERIMENTAL_BUBBLES 1\\n";
+        std::string defs = "#define QUALITY 3\n#define EXPERIMENTAL_BUBBLES 1\n";
         if (!buildProgram(g.experimental, shaders::kFragCompositeMax, defs, err, true)) {
             notify("DLSS 5 Experimental: no se pudo compilar el efecto burbuja; usando MAX");
             return Res::TierFailed;
