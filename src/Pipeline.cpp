@@ -63,6 +63,7 @@ struct Pipe {
     bool failed = false;
     bool programsReady = false;
     bool maxProgramsReady = false;
+    bool experimentalProgramReady = false;
     bool maxTargetsReady = false;
     void* ctx = nullptr;
     unsigned lastFrame = 0xFFFFFFFFu;
@@ -84,7 +85,7 @@ struct Pipe {
     Target occA, occB, occC, occ;
     std::array<Target, kBloomTargets> bloom;
 
-    Program box, down, downPre, up, edge, pack;
+    Program box, down, downPre, up, edge, pack, experimental;
     std::array<Program, kTierCount> comp;
     std::array<bool, kTierCount> compReady{false, false, false, false};
 
@@ -334,6 +335,8 @@ void releaseAll(bool deleteGL) {
     kill(g.up);
     kill(g.edge);
     kill(g.pack);
+    kill(g.experimental);
+    g.experimentalProgramReady = false;
     for (auto& p : g.comp) kill(p);
     g.compReady = {false, false, false, false};
     if (deleteGL && g.vbo) glDeleteBuffers(1, &g.vbo);
@@ -405,6 +408,14 @@ Res ensureResources(int w, int h, int q, std::string& err) {
             return Res::TierFailed;
         }
         g.maxProgramsReady = true;
+    }
+    if (q == 3 && config().experimental.load() && !g.experimentalProgramReady) {
+        std::string defs = "#define QUALITY 3\\n#define EXPERIMENTAL_BUBBLES 1\\n";
+        if (!buildProgram(g.experimental, shaders::kFragCompositeMax, defs, err, true)) {
+            notify("DLSS 5 Experimental: no se pudo compilar el efecto burbuja; usando MAX");
+            return Res::TierFailed;
+        }
+        g.experimentalProgramReady = true;
     }
     if (w != g.w || h != g.h || !g.sceneTex) {
         destroyTargets(true);
@@ -685,7 +696,7 @@ void onFrameRendered() {
 
     // ---- final composite straight into the screen ----------------------------------------------------
     updateLight();
-    Program const& cp = g.comp[q];
+    Program const& cp = (q == 3 && c.experimental.load() && g.experimentalProgramReady) ? g.experimental : g.comp[q];
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, sw, sh);
     glDisable(GL_BLEND);
