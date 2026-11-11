@@ -5,9 +5,9 @@
   },
   "id": "lleomc2.dlss5-geode",
   "name": "DLSS5 Geode",
-  "version": "v1.2.1",
+  "version": "v1.3.0",
   "developer": "lleomc2",
-  "description": "Filtro de renderizado neuronal estilo DLSS 5 para Geometry Dash. Cuatro calidades hasta MAX: reiluminacion de materiales, reflejos, iluminacion global, sombras suaves, antialiasing avanzado y etapa de color cinematografica en tiempo real.",
+  "description": "Filtro de renderizado estilo DLSS 5 para Geometry Dash. Cinco modos: Rendimiento, Equilibrado, Ultra, MAX y Experimental con acabado liquido tipo burbuja, reflejos y brillos dinamicos.",
   "tags": [
     "enhancement",
     "customization"
@@ -27,13 +27,14 @@
     "quality": {
       "type": "string",
       "name": "Calidad grafica",
-      "description": "Rendimiento: ligero. Equilibrado: recomendado. Ultra: todos los efectos. MAX: el mas alto (reflejos, iluminacion global, sombras suaves y antialiasing avanzado), pide un movil potente.",
+      "description": "Rendimiento: ligero. Equilibrado: recomendado. Ultra: avanzado. MAX: todos los efectos de iluminacion y reflejos. Experimental: MAX mas acabado liquido tipo burbuja y reflejos brillantes en orbes y decoraciones; puede consumir mas GPU.",
       "default": "Equilibrado",
       "one-of": [
         "Rendimiento",
         "Equilibrado",
         "Ultra",
-        "MAX"
+        "MAX",
+        "Experimental"
       ]
     },
     "look": {
