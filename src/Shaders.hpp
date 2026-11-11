@@ -325,6 +325,30 @@ void main() {
     vec3 bl = texture2D(u_bloom, uv).rgb;
     col += bl * mix(vec3(1.0), u_scatter, 0.5) * (0.62 * u_mix.x * k);
 
+#ifdef EXPERIMENTAL_BUBBLES
+    // ---- experimental liquid-glass / bubble finish -----------------------------------------------
+    // Screen-space highlight detection: favors bright, compact details such as orbs and decorations.
+    // It does not need object IDs, so it remains compatible with the game's normal sprite renderer.
+    float bubbleLum = luma(cM);
+    float bubbleSat = max(max(cM.r, cM.g), cM.b) - min(min(cM.r, cM.g), cM.b);
+    float bubbleEdge = length(gF);
+    float compactDetail = smoothstep(0.018, 0.095, bubbleEdge);
+    float brightDetail = smoothstep(0.38, 0.82, bubbleLum);
+    float bubbleMask = brightDetail * compactDetail * (0.72 + 0.28 * smoothstep(0.08, 0.48, bubbleSat));
+    vec2 bubbleGrad = normalize(gF + vec2(0.0001));
+    vec2 bubbleLight = normalize(vec2(-0.62, 0.78) + 0.22 * vec2(sin(u_time * 0.35), cos(u_time * 0.29)));
+    float bubbleRim = pow(clamp(1.0 - abs(dot(bubbleGrad, bubbleLight)), 0.0, 1.0), 5.0);
+    float bubbleSpec = pow(max(dot(normalize(vec3(-gF * 5.0, 1.0)), normalize(vec3(-0.42, 0.68, 0.82))), 0.0), 18.0);
+    float bubbleSheen = bubbleMask * (bubbleRim * 0.22 + bubbleSpec * 0.46);
+    vec3 liquidTint = mix(vec3(0.62, 0.88, 1.0), vec3(1.0, 0.98, 0.91), bubbleRim);
+    vec3 liquidEnv = texture2D(u_fine, uv + bubbleGrad * vec2(0.012 / aspect, 0.012)).rgb;
+    col = mix(col, mix(col, liquidEnv, 0.20 * bubbleMask), 0.45 * bubbleMask);
+    col += liquidTint * bubbleSheen * 0.78;
+    // A soft cyan/white caustic glint that drifts slowly like light on water.
+    float caustic = pow(max(0.0, sin((uv.x * 17.0 + uv.y * 11.0) + u_time * 0.55)), 18.0);
+    col += vec3(0.38, 0.72, 1.0) * caustic * bubbleMask * 0.10;
+#endif
+
     // ---- filmic grade -------------------------------------------------------------------------------
     col = max(col, 0.0);
     col = toneShoulder(col);
