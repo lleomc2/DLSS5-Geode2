@@ -1,0 +1,203 @@
+{
+  "geode": "5.11.2",
+  "gd": {
+    "android": "2.2081"
+  },
+  "id": "lleomc2.dlss5-geode",
+  "name": "DLSS5 Geode",
+  "version": "v1.2.1",
+  "developer": "lleomc2",
+  "description": "Filtro de renderizado neuronal estilo DLSS 5 para Geometry Dash. Cuatro calidades hasta MAX: reiluminacion de materiales, reflejos, iluminacion global, sombras suaves, antialiasing avanzado y etapa de color cinematografica en tiempo real.",
+  "tags": [
+    "enhancement",
+    "customization"
+  ],
+  "settings": {
+    "titulo-motor": {
+      "type": "title",
+      "name": "Motor DLSS 5",
+      "description": "Posprocesado de pantalla completa en GPU (OpenGL ES 2)."
+    },
+    "enabled": {
+      "type": "bool",
+      "name": "Activar DLSS 5",
+      "description": "Enciende o apaga todo el efecto. Apagado no consume nada de GPU.",
+      "default": true
+    },
+    "quality": {
+      "type": "string",
+      "name": "Calidad grafica",
+      "description": "Rendimiento: ligero. Equilibrado: recomendado. Ultra: todos los efectos. MAX: el mas alto (reflejos, iluminacion global, sombras suaves y antialiasing avanzado), pide un movil potente.",
+      "default": "Equilibrado",
+      "one-of": [
+        "Rendimiento",
+        "Equilibrado",
+        "Ultra",
+        "MAX"
+      ]
+    },
+    "look": {
+      "type": "string",
+      "name": "Estilo de color",
+      "description": "Tono de la etapa de color: Cinematico (frio en sombras, calido en luces), Natural (sin tinte), Calido, Frio o Neon.",
+      "default": "Cinematico",
+      "one-of": [
+        "Cinematico",
+        "Natural",
+        "Calido",
+        "Frio",
+        "Neon"
+      ]
+    },
+    "titulo-intensidad": {
+      "type": "title",
+      "name": "Intensidad",
+      "description": "100 es el valor pensado. Puedes subir un poco o bajar cada parte."
+    },
+    "intensity": {
+      "type": "float",
+      "name": "Intensidad general",
+      "description": "Cuanto del efecto se aplica en total. 0 = original.",
+      "default": 100,
+      "min": 0,
+      "max": 130,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "detail": {
+      "type": "float",
+      "name": "Detalle neuronal",
+      "description": "Nitidez adaptativa y claridad local de texturas y bordes.",
+      "default": 100,
+      "min": 0,
+      "max": 150,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "bloom": {
+      "type": "float",
+      "name": "Dispersion de luz",
+      "description": "Resplandor suave alrededor de zonas brillantes (bloom multinivel).",
+      "default": 100,
+      "min": 0,
+      "max": 150,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "relight": {
+      "type": "float",
+      "name": "Reiluminacion de materiales",
+      "description": "Relieve, brillos especulares y luz direccional sobre los objetos.",
+      "default": 100,
+      "min": 0,
+      "max": 150,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "shadows": {
+      "type": "float",
+      "name": "Sombras de contacto y AO",
+      "description": "Sombras suaves bajo los objetos y oclusion ambiental. En MAX son sombras suaves de pantalla completa.",
+      "default": 100,
+      "min": 0,
+      "max": 150,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "film": {
+      "type": "float",
+      "name": "Grano y aberracion",
+      "description": "Grano de pelicula muy fino y aberracion cromatica en los bordes (solo Ultra).",
+      "default": 100,
+      "min": 0,
+      "max": 150,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "reflect": {
+      "type": "float",
+      "name": "Reflejos de materiales (solo MAX)",
+      "description": "Brillo de reflejo en bordes y biseles que toma el color del entorno.",
+      "default": 100,
+      "min": 0,
+      "max": 150,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "gi": {
+      "type": "float",
+      "name": "Iluminacion global (solo MAX)",
+      "description": "Las zonas oscuras reciben color del entorno, como luz rebotada.",
+      "default": 100,
+      "min": 0,
+      "max": 150,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    },
+    "titulo-extras": {
+      "type": "title",
+      "name": "Extras"
+    },
+    "player-light": {
+      "type": "bool",
+      "name": "Luz que sigue al jugador",
+      "description": "Una luz suave acompana al jugador y ilumina los bordes cercanos.",
+      "default": true
+    },
+    "menus": {
+      "type": "bool",
+      "name": "Aplicar tambien en menus",
+      "description": "Si lo apagas, el filtro solo actua dentro de los niveles y del editor.",
+      "default": true
+    },
+    "auto-quality": {
+      "type": "bool",
+      "name": "Proteccion de FPS",
+      "description": "Si los FPS bajan mucho durante unos segundos, baja un nivel de calidad solo. Para volver a subir, cambia la calidad otra vez.",
+      "default": false
+    },
+    "compare": {
+      "type": "bool",
+      "name": "Comparar antes/despues",
+      "description": "Dibuja una linea vertical: a la izquierda la imagen original, a la derecha con DLSS 5.",
+      "default": false
+    },
+    "compare-pos": {
+      "type": "float",
+      "name": "Posicion de la linea",
+      "description": "Donde se coloca la linea de comparacion (porcentaje del ancho).",
+      "default": 50,
+      "min": 5,
+      "max": 95,
+      "control": {
+        "slider": true,
+        "slider-step": 5,
+        "input": false
+      }
+    }
+  }
+}

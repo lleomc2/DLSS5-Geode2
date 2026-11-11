@@ -1,0 +1,3 @@
+build/
+*.geode
+.DS_Store
