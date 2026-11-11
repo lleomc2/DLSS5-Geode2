@@ -35,7 +35,8 @@ void reload() {
     auto* mod = Mod::get();
     auto& c = config();
     c.enabled = mod->getSettingValue<bool>("enabled");
-    c.quality = indexOf(mod->getSettingValue<std::string>("quality"), {"Rendimiento", "Equilibrado", "Ultra", "MAX"}, 1);
+    c.quality = indexOf(mod->getSettingValue<std::string>("quality"), {"Rendimiento", "Equilibrado", "Ultra", "MAX", "Experimental"}, 1);
+    c.experimental = mod->getSettingValue<std::string>("quality") == "Experimental";
     c.look = indexOf(mod->getSettingValue<std::string>("look"), {"Cinematico", "Natural", "Calido", "Frio", "Neon"}, 0);
     c.intensity = percent(mod->getSettingValue<double>("intensity"), 0.0, 130.0);
     c.detail = percent(mod->getSettingValue<double>("detail"), 0.0, 150.0);
