@@ -35,7 +35,7 @@ std::string dlss5Label() {
 
 } // namespace
 
-// Quick toggle in the pause menu: Off -> Rendimiento -> Equilibrado -> Ultra -> MAX -> Off
+// Quick toggle in the pause menu: Off -> Rendimiento -> Equilibrado -> Ultra -> MAX -> Experimental -> Off
 class $modify(DLSS5PauseLayer, PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
@@ -69,6 +69,8 @@ class $modify(DLSS5PauseLayer, PauseLayer) {
             mod->setSettingValue<std::string>("quality", std::string("Ultra"));
         } else if (quality == "Ultra") {
             mod->setSettingValue<std::string>("quality", std::string("MAX"));
+        } else if (quality == "MAX") {
+            mod->setSettingValue<std::string>("quality", std::string("Experimental"));
         } else {
             mod->setSettingValue<bool>("enabled", false);
         }
