@@ -425,7 +425,7 @@ Res ensureResources(int w, int h, int q, std::string& err) {
         g.experimentalProgramReady = true;
     }
     if (q == 3 && config().bubble.load() && !g.bubbleProgramReady) {
-        std::string defs = "#define QUALITY 3\n#define EXPERIMENTAL_BUBBLES 1\n";
+        std::string defs = "#define QUALITY 3\n#define EXPERIMENTAL_BUBBLES 1\n#define BUBBLE_MODE 1\n";
         if (!buildProgram(g.bubble, shaders::kFragCompositeMax, defs, err, true)) {
             notify("DLSS 5 BURBUJA: no se pudo compilar el efecto; usando MAX");
             config().bubble = false;
