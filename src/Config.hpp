@@ -18,6 +18,7 @@ struct Config {
     std::atomic<int> quality{1};   // 0 = Rendimiento, 1 = Equilibrado, 2 = Ultra, 3 = MAX
     std::atomic<bool> experimental{false};
     std::atomic<bool> bubble{false};
+    std::atomic<bool> water{false};
     std::atomic<int> look{0};      // index into the style table (see Pipeline.cpp)
     std::atomic<float> intensity{1.f};
     std::atomic<float> detail{1.f};
