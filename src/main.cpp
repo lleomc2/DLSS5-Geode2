@@ -35,7 +35,7 @@ std::string dlss5Label() {
 
 } // namespace
 
-// Quick toggle: Off -> Rendimiento -> Equilibrado -> Ultra -> MAX -> Experimental -> BURBUJA -> Off
+// Quick toggle: Off -> Rendimiento -> Equilibrado -> Ultra -> MAX -> Experimental -> BURBUJA -> AGUA REALISTA -> Off
 class $modify(DLSS5PauseLayer, PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
@@ -73,6 +73,8 @@ class $modify(DLSS5PauseLayer, PauseLayer) {
             mod->setSettingValue<std::string>("quality", std::string("Experimental"));
         } else if (quality == "Experimental") {
             mod->setSettingValue<std::string>("quality", std::string("BURBUJA"));
+        } else if (quality == "BURBUJA") {
+            mod->setSettingValue<std::string>("quality", std::string("AGUA REALISTA"));
         } else {
             mod->setSettingValue<bool>("enabled", false);
         }
