@@ -517,26 +517,45 @@ void main() {
     col += bl * mix(vec3(1.0), u_scatter, 0.5) * (0.45 * u_mix.x * k);
 
 #ifdef BUBBLE_MODE
-    // ---- steady colour-matched liquid-bubble finish ---------------------------------------------
-    // Screen-space material pass: preserves source hue and adds restrained glass-like edge sheen.
-    vec3 bubbleOcc = texture2D(u_occ, uv).rgb;
-    float bubbleGradLen = length(gF) + 0.35 * length(gC);
-    float bubbleEdge = smoothstep(0.018, 0.105, bubbleGradLen);
-    float bubbleOccMask = smoothstep(0.012, 0.12, max(bubbleOcc.r, bubbleOcc.g * 0.42));
-    float bubbleObject = smoothstep(0.075, 0.30, length(cM - wide));
-    float bubbleMask = max(bubbleEdge, bubbleOccMask) * bubbleObject;
-    vec2 bubbleGrad = (gF * 0.68 + gC * 0.32) / max(bubbleGradLen, 0.002);
-    vec3 bubbleNormal = normalize(vec3(-bubbleGrad * 2.7, 1.0));
-    vec3 bubbleLight = normalize(vec3(-0.48, 0.72, 0.78));
-    float bubbleSpec = pow(max(dot(bubbleNormal, bubbleLight), 0.0), 20.0) * bubbleMask;
-    float bubbleFacing = abs(dot(normalize(bubbleGrad + vec2(0.001)), normalize(vec2(-0.55, 0.83))));
-    float bubbleRim = pow(clamp(1.0 - bubbleFacing, 0.0, 1.0), 4.0) * bubbleMask;
-    vec3 bubbleHue = clamp(cM, 0.025, 1.0);
-    vec3 bubbleEnv = texture2D(u_fine, uv + bubbleGrad * vec2(0.008 / aspect, 0.008)).rgb;
-    col = mix(col, bubbleEnv, bubbleMask * 0.085);
-    col += mix(bubbleHue, vec3(1.0), 0.30) * bubbleRim * 0.11;
-    col += vec3(1.0) * bubbleSpec * 0.16;
-    col *= 1.0 - bubbleMask * 0.025;
+    // ---- realistic water-like surface ------------------------------------------------------------
+    // Screen-space approximation: subtle refraction, flowing ripples and colour-matched reflections.
+    // The original Geometry Dash sprite colours remain the material's base colour.
+    vec3 waterOcc = texture2D(u_occ, uv).rgb;
+    float waterGradLen = length(gF) + 0.35 * length(gC);
+    float waterEdge = smoothstep(0.014, 0.105, waterGradLen);
+    float waterOccMask = smoothstep(0.010, 0.105, max(waterOcc.r, waterOcc.g * 0.40));
+    float waterObject = smoothstep(0.045, 0.22, length(cM - wide));
+    float waterMask = clamp(max(waterEdge * 0.72, waterOccMask) * waterObject, 0.0, 1.0);
+
+    vec2 waterGrad = (gF * 0.68 + gC * 0.32) / max(waterGradLen, 0.002);
+    vec2 waterPos = uv * vec2(aspect, 1.0);
+    float waveA = sin(waterPos.x * 43.0 + sin(waterPos.y * 29.0 + u_time * 0.42) * 1.7 + u_time * 0.31);
+    float waveB = sin(waterPos.y * 38.0 + sin(waterPos.x * 25.0 - u_time * 0.34) * 1.4 - u_time * 0.25);
+    vec2 waveSlope = vec2(cos(waterPos.x * 43.0 + u_time * 0.31) * 0.035,
+                          cos(waterPos.y * 38.0 - u_time * 0.25) * 0.035);
+    vec2 waterNormalXY = waterGrad * 0.78 + waveSlope;
+    vec3 waterNormal = normalize(vec3(-waterNormalXY * 1.65, 1.0));
+
+    // Small UV displacement bends the scene underneath, like looking through moving water.
+    vec2 waterOffset = waterNormalXY * vec2(0.0038 / aspect, 0.0038);
+    vec2 waterUV = clamp(uv + waterOffset, vec2(0.001), vec2(0.999));
+    vec3 waterRefracted = texture2D(u_scene, waterUV).rgb;
+    vec3 waterReflected = texture2D(u_fine, waterUV).rgb;
+    vec3 waterSurface = mix(col, waterRefracted, 0.22);
+    waterSurface = mix(waterSurface, waterReflected, 0.035);
+
+    float waterSpec = pow(max(dot(waterNormal, normalize(vec3(-0.42, 0.68, 0.82))), 0.0), 24.0);
+    float waterFresnel = pow(clamp(1.0 - waterNormal.z, 0.0, 1.0), 2.2);
+    float waterRipple = pow(max(waveA * waveB, 0.0), 7.0);
+    float waterFoam = pow(max(waveA + waveB - 1.25, 0.0), 3.0);
+    vec3 waterHue = clamp(cM, 0.025, 1.0);
+    vec3 waterGlint = mix(waterHue, vec3(1.0), 0.24);
+
+    col = mix(col, waterSurface, waterMask * 0.34);
+    col += waterGlint * waterMask * (waterSpec * 0.095 + waterFresnel * 0.025);
+    col += waterHue * waterMask * waterRipple * 0.025;
+    col += waterGlint * waterMask * waterFoam * 0.018;
+    col *= 1.0 - waterMask * (0.012 + waterRipple * 0.012);
 #endif
 
 #ifdef EXPERIMENTAL_BUBBLES
