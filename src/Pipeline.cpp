@@ -65,6 +65,7 @@ struct Pipe {
     bool maxProgramsReady = false;
     bool experimentalProgramReady = false;
     bool bubbleProgramReady = false;
+    bool waterProgramReady = false;
     bool maxTargetsReady = false;
     void* ctx = nullptr;
     unsigned lastFrame = 0xFFFFFFFFu;
@@ -86,7 +87,7 @@ struct Pipe {
     Target occA, occB, occC, occ;
     std::array<Target, kBloomTargets> bloom;
 
-    Program box, down, downPre, up, edge, pack, experimental, bubble;
+    Program box, down, downPre, up, edge, pack, experimental, bubble, water;
     std::array<Program, kTierCount> comp;
     std::array<bool, kTierCount> compReady{false, false, false, false};
 
@@ -338,8 +339,10 @@ void releaseAll(bool deleteGL) {
     kill(g.pack);
     kill(g.experimental);
     kill(g.bubble);
+    kill(g.water);
     g.experimentalProgramReady = false;
     g.bubbleProgramReady = false;
+    g.waterProgramReady = false;
     for (auto& p : g.comp) kill(p);
     g.compReady = {false, false, false, false};
     if (deleteGL && g.vbo) glDeleteBuffers(1, &g.vbo);
@@ -429,6 +432,15 @@ Res ensureResources(int w, int h, int q, std::string& err) {
             return Res::Ok;
         }
         g.bubbleProgramReady = true;
+    }
+    if (q == 3 && config().water.load() && !g.waterProgramReady) {
+        std::string defs = "#define QUALITY 3\\n#define BUBBLE_MODE 1\\n";
+        if (!buildProgram(g.water, shaders::kFragCompositeMax, defs, err, true)) {
+            notify("DLSS 5 AGUA REALISTA: no se pudo compilar el efecto; usando MAX");
+            config().water = false;
+            return Res::Ok;
+        }
+        g.waterProgramReady = true;
     }
     if (w != g.w || h != g.h || !g.sceneTex) {
         destroyTargets(true);
@@ -709,7 +721,8 @@ void onFrameRendered() {
 
     // ---- final composite straight into the screen ----------------------------------------------------
     updateLight();
-    Program const& cp = (q == 3 && c.bubble.load() && g.bubbleProgramReady) ? g.bubble
+    Program const& cp = (q == 3 && c.water.load() && g.waterProgramReady) ? g.water
+                      : (q == 3 && c.bubble.load() && g.bubbleProgramReady) ? g.bubble
                       : (q == 3 && c.experimental.load() && g.experimentalProgramReady) ? g.experimental
                       : g.comp[q];
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
