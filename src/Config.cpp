@@ -36,9 +36,10 @@ void reload() {
     auto& c = config();
     c.enabled = mod->getSettingValue<bool>("enabled");
     auto quality = mod->getSettingValue<std::string>("quality");
-    c.quality = indexOf(quality, {"Rendimiento", "Equilibrado", "Ultra", "MAX", "Experimental", "BURBUJA"}, 1);
+    c.quality = indexOf(quality, {"Rendimiento", "Equilibrado", "Ultra", "MAX", "Experimental", "BURBUJA", "AGUA REALISTA"}, 1);
     c.experimental = quality == "Experimental";
     c.bubble = quality == "BURBUJA";
+    c.water = quality == "AGUA REALISTA";
     c.look = indexOf(mod->getSettingValue<std::string>("look"), {"Cinematico", "Natural", "Calido", "Frio", "Neon"}, 0);
     c.intensity = percent(mod->getSettingValue<double>("intensity"), 0.0, 130.0);
     c.detail = percent(mod->getSettingValue<double>("detail"), 0.0, 150.0);
