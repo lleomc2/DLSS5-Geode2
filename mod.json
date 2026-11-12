@@ -5,9 +5,9 @@
   },
   "id": "lleomc2.dlss5-geode",
   "name": "DLSS5 Geode",
-  "version": "v1.5.0",
+  "version": "v1.6.0",
   "developer": "lleomc2",
-  "description": "Filtro de renderizado estilo DLSS 5 para Geometry Dash. Seis modos, incluido BURBUJA con textura acuosa realista, refraccion suave, ondas y brillo controlado.",
+  "description": "Filtro de renderizado estilo DLSS 5 para Geometry Dash. Siete modos, incluido AGUA REALISTA con refraccion y reflejos acuosos, separado de BURBUJA.",
   "tags": [
     "enhancement",
     "customization"
@@ -27,7 +27,7 @@
     "quality": {
       "type": "string",
       "name": "Calidad grafica",
-      "description": "Rendimiento: ligero. Equilibrado: recomendado. Ultra: avanzado. MAX: iluminacion y reflejos. Experimental: acabado liquido sutil. BURBUJA: apariencia de agua realista en bloques, pinchos y detalles, con refraccion suave y reflejos estables.",
+      "description": "Rendimiento: ligero. Equilibrado: recomendado. Ultra: avanzado. MAX: iluminacion y reflejos. Experimental: acabado liquido sutil. BURBUJA: acabado de burbuja. AGUA REALISTA: toda la escena con refraccion, ondas y reflejos acuosos.",
       "default": "Equilibrado",
       "one-of": [
         "Rendimiento",
@@ -35,7 +35,8 @@
         "Ultra",
         "MAX",
         "Experimental",
-        "BURBUJA"
+        "BURBUJA",
+        "AGUA REALISTA"
       ]
     },
     "look": {
