@@ -148,7 +148,7 @@ void main() {
 
     // ---- bloom / light scattering -------------------------------------------------------------
     vec3 bl = texture2D(u_bloom, uv).rgb;
-    col += bl * mix(vec3(1.0), u_scatter, 0.5) * (0.62 * u_mix.x * k);
+    col += bl * mix(vec3(1.0), u_scatter, 0.5) * (0.45 * u_mix.x * k);
 
     // ---- filmic grade -------------------------------------------------------------------------------
     col = max(col, 0.0);

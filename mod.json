@@ -5,9 +5,9 @@
   },
   "id": "lleomc2.dlss5-geode",
   "name": "DLSS5 Geode",
-  "version": "v1.3.0",
+  "version": "v1.4.0",
   "developer": "lleomc2",
-  "description": "Filtro de renderizado estilo DLSS 5 para Geometry Dash. Cinco modos: Rendimiento, Equilibrado, Ultra, MAX y Experimental con acabado liquido tipo burbuja, reflejos y brillos dinamicos.",
+  "description": "Filtro de renderizado estilo DLSS 5 para Geometry Dash. Seis modos: Rendimiento, Equilibrado, Ultra, MAX, Experimental y BURBUJA con brillo controlado.",
   "tags": [
     "enhancement",
     "customization"
@@ -27,14 +27,15 @@
     "quality": {
       "type": "string",
       "name": "Calidad grafica",
-      "description": "Rendimiento: ligero. Equilibrado: recomendado. Ultra: avanzado. MAX: todos los efectos de iluminacion y reflejos. Experimental: MAX mas acabado liquido tipo burbuja y reflejos brillantes en orbes y decoraciones; puede consumir mas GPU.",
+      "description": "Rendimiento: ligero. Equilibrado: recomendado. Ultra: avanzado. MAX: iluminacion y reflejos. Experimental: acabado liquido sutil. BURBUJA: bloques, pinchos y detalles con reflejos tipo burbuja del mismo color, sin brillo excesivo.",
       "default": "Equilibrado",
       "one-of": [
         "Rendimiento",
         "Equilibrado",
         "Ultra",
         "MAX",
-        "Experimental"
+        "Experimental",
+        "BURBUJA"
       ]
     },
     "look": {
@@ -59,7 +60,7 @@
       "type": "float",
       "name": "Intensidad general",
       "description": "Cuanto del efecto se aplica en total. 0 = original.",
-      "default": 100,
+      "default": 95,
       "min": 0,
       "max": 130,
       "control": {
@@ -85,7 +86,7 @@
       "type": "float",
       "name": "Dispersion de luz",
       "description": "Resplandor suave alrededor de zonas brillantes (bloom multinivel).",
-      "default": 100,
+      "default": 65,
       "min": 0,
       "max": 150,
       "control": {
@@ -98,7 +99,7 @@
       "type": "float",
       "name": "Reiluminacion de materiales",
       "description": "Relieve, brillos especulares y luz direccional sobre los objetos.",
-      "default": 100,
+      "default": 75,
       "min": 0,
       "max": 150,
       "control": {
@@ -137,7 +138,7 @@
       "type": "float",
       "name": "Reflejos de materiales (solo MAX)",
       "description": "Brillo de reflejo en bordes y biseles que toma el color del entorno.",
-      "default": 100,
+      "default": 70,
       "min": 0,
       "max": 150,
       "control": {

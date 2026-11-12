@@ -158,7 +158,30 @@ void main() {
 
     // ---- bloom / light scattering -------------------------------------------------------------------
     vec3 bl = texture2D(u_bloom, uv).rgb;
-    col += bl * mix(vec3(1.0), u_scatter, 0.5) * (0.62 * u_mix.x * k);
+    col += bl * mix(vec3(1.0), u_scatter, 0.5) * (0.45 * u_mix.x * k);
+
+#ifdef BUBBLE_MODE
+    // ---- steady colour-matched liquid-bubble finish ---------------------------------------------
+    // Screen-space material pass: preserves source hue and adds restrained glass-like edge sheen.
+    vec3 bubbleOcc = texture2D(u_occ, uv).rgb;
+    float bubbleGradLen = length(gF) + 0.35 * length(gC);
+    float bubbleEdge = smoothstep(0.018, 0.105, bubbleGradLen);
+    float bubbleOccMask = smoothstep(0.012, 0.12, max(bubbleOcc.r, bubbleOcc.g * 0.42));
+    float bubbleObject = smoothstep(0.075, 0.30, length(cM - wide));
+    float bubbleMask = max(bubbleEdge, bubbleOccMask) * bubbleObject;
+    vec2 bubbleGrad = (gF * 0.68 + gC * 0.32) / max(bubbleGradLen, 0.002);
+    vec3 bubbleNormal = normalize(vec3(-bubbleGrad * 2.7, 1.0));
+    vec3 bubbleLight = normalize(vec3(-0.48, 0.72, 0.78));
+    float bubbleSpec = pow(max(dot(bubbleNormal, bubbleLight), 0.0), 20.0) * bubbleMask;
+    float bubbleFacing = abs(dot(normalize(bubbleGrad + vec2(0.001)), normalize(vec2(-0.55, 0.83))));
+    float bubbleRim = pow(clamp(1.0 - bubbleFacing, 0.0, 1.0), 4.0) * bubbleMask;
+    vec3 bubbleHue = clamp(cM, 0.025, 1.0);
+    vec3 bubbleEnv = texture2D(u_fine, uv + bubbleGrad * vec2(0.008 / aspect, 0.008)).rgb;
+    col = mix(col, bubbleEnv, bubbleMask * 0.085);
+    col += mix(bubbleHue, vec3(1.0), 0.30) * bubbleRim * 0.11;
+    col += vec3(1.0) * bubbleSpec * 0.16;
+    col *= 1.0 - bubbleMask * 0.025;
+#endif
 
     // ---- filmic grade -------------------------------------------------------------------------------
     col = toneShoulder(max(col, 0.0));

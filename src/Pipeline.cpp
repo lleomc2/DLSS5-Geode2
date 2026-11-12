@@ -64,6 +64,7 @@ struct Pipe {
     bool programsReady = false;
     bool maxProgramsReady = false;
     bool experimentalProgramReady = false;
+    bool bubbleProgramReady = false;
     bool maxTargetsReady = false;
     void* ctx = nullptr;
     unsigned lastFrame = 0xFFFFFFFFu;
@@ -85,7 +86,7 @@ struct Pipe {
     Target occA, occB, occC, occ;
     std::array<Target, kBloomTargets> bloom;
 
-    Program box, down, downPre, up, edge, pack, experimental;
+    Program box, down, downPre, up, edge, pack, experimental, bubble;
     std::array<Program, kTierCount> comp;
     std::array<bool, kTierCount> compReady{false, false, false, false};
 
@@ -336,7 +337,9 @@ void releaseAll(bool deleteGL) {
     kill(g.edge);
     kill(g.pack);
     kill(g.experimental);
+    kill(g.bubble);
     g.experimentalProgramReady = false;
+    g.bubbleProgramReady = false;
     for (auto& p : g.comp) kill(p);
     g.compReady = {false, false, false, false};
     if (deleteGL && g.vbo) glDeleteBuffers(1, &g.vbo);
@@ -412,11 +415,20 @@ Res ensureResources(int w, int h, int q, std::string& err) {
     if (q == 3 && config().experimental.load() && !g.experimentalProgramReady) {
         std::string defs = "#define QUALITY 3\n#define EXPERIMENTAL_BUBBLES 1\n";
         if (!buildProgram(g.experimental, shaders::kFragCompositeMax, defs, err, true)) {
-            notify("DLSS 5 Experimental: no se pudo compilar el efecto burbuja; usando MAX");
+            notify("DLSS 5 Experimental: no se pudo compilar el efecto; usando MAX");
             config().experimental = false;
             return Res::Ok;
         }
         g.experimentalProgramReady = true;
+    }
+    if (q == 3 && config().bubble.load() && !g.bubbleProgramReady) {
+        std::string defs = "#define QUALITY 3\n#define BUBBLE_MODE 1\n";
+        if (!buildProgram(g.bubble, shaders::kFragCompositeMax, defs, err, true)) {
+            notify("DLSS 5 BURBUJA: no se pudo compilar el efecto; usando MAX");
+            config().bubble = false;
+            return Res::Ok;
+        }
+        g.bubbleProgramReady = true;
     }
     if (w != g.w || h != g.h || !g.sceneTex) {
         destroyTargets(true);
@@ -697,7 +709,9 @@ void onFrameRendered() {
 
     // ---- final composite straight into the screen ----------------------------------------------------
     updateLight();
-    Program const& cp = (q == 3 && c.experimental.load() && g.experimentalProgramReady) ? g.experimental : g.comp[q];
+    Program const& cp = (q == 3 && c.bubble.load() && g.bubbleProgramReady) ? g.bubble
+                      : (q == 3 && c.experimental.load() && g.experimentalProgramReady) ? g.experimental
+                      : g.comp[q];
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, sw, sh);
     glDisable(GL_BLEND);
